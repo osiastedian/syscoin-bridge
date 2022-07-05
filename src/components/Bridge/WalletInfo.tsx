@@ -1,6 +1,7 @@
 import { Box, Button, Card, CardContent, Typography } from "@mui/material";
 
 import { useConnectedWallet } from "../../contexts/ConnectedWallet/useConnectedWallet";
+import { ITransfer } from "../../contexts/Transfer/types";
 import { useTransfer } from "../../contexts/Transfer/useTransfer";
 import SyscoinLogo from "../Icons/syscoin";
 
@@ -16,8 +17,53 @@ interface IProps {
   };
 }
 
+const PaliWallet: React.FC<{ transfer: ITransfer }> = ({ transfer }) => {
+  const { utxo, connectUTXO, availableWallets } = useConnectedWallet();
+  return (
+    <Box display="flex" alignItems="center">
+      <img
+        src="/pali-wallet-logo.svg"
+        height="32px"
+        width="32px"
+        alt="PaliWallet logo"
+      />
+      {transfer.status === "initialize" ? (
+        utxo.account ? (
+          <Typography variant="body2">{utxo.account}</Typography>
+        ) : (
+          <Button
+            disabled={!availableWallets.paliWallet}
+            onClick={() => connectUTXO("pali-wallet")}
+          >
+            {availableWallets.paliWallet === undefined
+              ? "Checking Pali Wallet"
+              : availableWallets.paliWallet
+              ? "Connect"
+              : "Not installed"}
+          </Button>
+        )
+      ) : utxo.account ? (
+        utxo.account === transfer.utxoAddress ? (
+          <Typography variant="body2">{transfer.utxoAddress}</Typography>
+        ) : (
+          <Typography variant="body2">
+            Change to {transfer.utxoAddress}
+          </Typography>
+        )
+      ) : (
+        <Button
+          disabled={!availableWallets.paliWallet}
+          onClick={() => connectUTXO("pali-wallet")}
+        >
+          Reconnect
+        </Button>
+      )}
+    </Box>
+  );
+};
+
 const BridgeWalletInfo: React.FC<IProps> = ({ label, network, walletType }) => {
-  const { nevm, utxo, connectUTXO, connectNEVM } = useConnectedWallet();
+  const { nevm, utxo, connectNEVM, availableWallets } = useConnectedWallet();
   const { transfer } = useTransfer();
 
   return (
@@ -39,35 +85,7 @@ const BridgeWalletInfo: React.FC<IProps> = ({ label, network, walletType }) => {
         </CardContent>
       </Card>
       {walletType === "utxo" && utxo.type === "pali-wallet" && (
-        <Box display="flex" alignItems="center">
-          <img
-            src="/pali-wallet-logo.svg"
-            height="32px"
-            width="32px"
-            alt="PaliWallet logo"
-          />
-          {transfer.status === "initialize" ? (
-            utxo.account ? (
-              <Typography variant="body2">{utxo.account}</Typography>
-            ) : (
-              <Button onClick={() => connectUTXO("pali-wallet")}>
-                Connect
-              </Button>
-            )
-          ) : utxo.account ? (
-            utxo.account === transfer.utxoAddress ? (
-              <Typography variant="body2">{transfer.utxoAddress}</Typography>
-            ) : (
-              <Typography variant="body2">
-                Change to {transfer.utxoAddress}
-              </Typography>
-            )
-          ) : (
-            <Button onClick={() => connectUTXO("pali-wallet")}>
-              Reconnect
-            </Button>
-          )}
-        </Box>
+        <PaliWallet transfer={transfer} />
       )}
       {walletType === "nevm" && nevm.type === "metamask" && (
         <Box display="flex" alignItems="center">
@@ -81,7 +99,16 @@ const BridgeWalletInfo: React.FC<IProps> = ({ label, network, walletType }) => {
             nevm.account ? (
               <Typography variant="body2">{nevm.account}</Typography>
             ) : (
-              <Button onClick={() => connectNEVM("metamask")}>Connect</Button>
+              <Button
+                disabled={!availableWallets.metamask}
+                onClick={() => connectNEVM("metamask")}
+              >
+                {availableWallets.metamask === undefined
+                  ? "Checking Metamask"
+                  : availableWallets.metamask
+                  ? "Connect"
+                  : "Not installed"}
+              </Button>
             )
           ) : (
             <Typography variant="body2">{transfer.nevmAddress}</Typography>

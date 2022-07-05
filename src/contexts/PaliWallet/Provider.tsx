@@ -1,4 +1,4 @@
-import React, { createContext, useEffect, useState } from "react";
+import React, { createContext, useCallback, useEffect, useState } from "react";
 import { UTXOTransaction } from "syscoinjs-lib";
 import { utils as syscoinUtils } from "syscoinjs-lib";
 import { PaliWallet } from "./types";
@@ -43,22 +43,16 @@ const PaliWalletContextProvider: React.FC<{ children: React.ReactNode }> = ({
   const [xpubAddress, setXpubAddress] = useState<string>();
   const [walletState, setWalletState] = useState<PaliWallet.WalletState>();
 
-  const connectWallet = () => {
-    if (!controller) {
-      return;
-    }
-    return controller.connectWallet();
-  };
-
   const sendTransaction = async (transaction: UTXOTransaction) => {
-    if (!controller) {
+    const windowController = loadWindowController();
+    if (!windowController) {
       return Promise.reject("No controller");
     }
-    const account = await controller.getConnectedAccount();
+    const account = await windowController.getConnectedAccount();
     if (account === null) {
       await connectWallet();
     }
-    const signedTransaction = await controller.signAndSend(transaction);
+    const signedTransaction = await windowController.signAndSend(transaction);
     const unserializedResp = syscoinUtils.importPsbtFromJson(
       signedTransaction,
       syscoinUtils.syscoinNetworks.mainnet
@@ -69,47 +63,75 @@ const PaliWalletContextProvider: React.FC<{ children: React.ReactNode }> = ({
     };
   };
 
+  const loadWindowController = useCallback(() => {
+    if (controller) {
+      return controller;
+    }
+    console.log("controller is set");
+    const windowController = window.ConnectionsController!;
+    setController(controller);
+    windowController.onWalletUpdate(async () => {
+      const xpubAddress = await windowController.getConnectedAccountXpub();
+      const account = await windowController.getConnectedAccount();
+      const walletState = await windowController.getWalletState();
+      setConnectedAccount(account ? account.address.main : undefined);
+      setXpubAddress(xpubAddress);
+      setWalletState(walletState);
+    });
+    return windowController;
+  }, [controller]);
+
+  const connectWallet = () => {
+    const windowController = loadWindowController();
+    if (!windowController) {
+      return;
+    }
+    return windowController.connectWallet();
+  };
+
   useEffect(() => {
-    if (window === undefined) {
+    if (controller) {
       return;
     }
 
-    const check = (intervalId?: NodeJS.Timeout) => {
-      if (window && window.ConnectionsController && !isInstalled) {
+    const callback = async (event: any) => {
+      if (event.detail.SyscoinInstalled) {
         setIsInstalled(true);
-        const controller = window.ConnectionsController;
-        setController(window.ConnectionsController);
-        controller.onWalletUpdate(async () => {
-          const xpubAddress = await controller.getConnectedAccountXpub();
-          const account = await controller.getConnectedAccount();
-          const walletState = await controller.getWalletState();
-          setConnectedAccount(account ? account.address.main : undefined);
-          setXpubAddress(xpubAddress);
-          setWalletState(walletState);
-        });
-        clearInterval(intervalId);
-      }
-    };
+        console.log("syscoin is installed");
 
-    check();
-
-    if (!isInstalled) {
-      setTimeout(() => {
-        if (isInstalled === undefined) {
-          setIsInstalled(false);
+        if (
+          event.detail.ConnectionsController &&
+          window.ConnectionsController
+        ) {
+          loadWindowController();
+          return;
         }
-      }, 10000);
-      const checkInterval = setInterval(() => {
-        check(checkInterval);
-      }, 100);
-    }
-
-    return () => {
-      if (controller) {
-        controller.disconnectWallet();
+        return;
       }
+
+      window.removeEventListener("SyscoinStatus", callback);
     };
-  }, [controller, isInstalled]);
+
+    console.log("checking syscoin status");
+
+    window.addEventListener("SyscoinStatus", callback);
+
+    const check = setInterval(async () => {
+      if (window.ConnectionsController) {
+        setIsInstalled(true);
+        console.log("syscoin is installed");
+        loadWindowController();
+        clearInterval(check);
+      }
+    }, 100);
+
+    setTimeout(() => {
+      if (!window.ConnectionsController) {
+        setIsInstalled(false);
+      }
+      clearInterval(check);
+    }, 10000);
+  }, [controller, loadWindowController]);
 
   return (
     <PaliWalletContext.Provider

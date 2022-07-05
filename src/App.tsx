@@ -23,8 +23,8 @@ const App = () => {
   ]);
 
   return (
-    <ThemeProvider theme={theme}>
-      <PaliWalletContextProvider>
+    <PaliWalletContextProvider>
+      <ThemeProvider theme={theme}>
         <MetamaskProvider>
           <ConnectedWalletProvider>
             <QueryClientProvider client={queryClient}>
@@ -32,8 +32,8 @@ const App = () => {
             </QueryClientProvider>
           </ConnectedWalletProvider>
         </MetamaskProvider>
-      </PaliWalletContextProvider>
-    </ThemeProvider>
+      </ThemeProvider>
+    </PaliWalletContextProvider>
   );
 };
 

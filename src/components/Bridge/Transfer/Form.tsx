@@ -35,7 +35,7 @@ const BridgeTransferForm: React.FC = () => {
           label="Amount"
           placeholder="0.01"
           margin="dense"
-          inputProps={{ inputMode: "numeric", pattern: "[0-9]+.[0-9]*" }}
+          inputProps={{ inputMode: "numeric", pattern: "[0-9]+(.[0-9])*" }}
           InputProps={{
             endAdornment: <InputAdornment position="end">SYS</InputAdornment>,
           }}
