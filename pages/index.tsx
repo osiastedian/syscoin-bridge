@@ -29,7 +29,7 @@ const SectionContainer = styled(Box)({
 const Home: NextPage = () => {
   const { nevm, utxo } = useConnectedWallet();
 
-  const isReady = nevm.account && utxo.account;
+  const isReady = nevm.account && utxo.xpub;
 
   return (
     <Box>

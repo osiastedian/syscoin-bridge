@@ -4,11 +4,9 @@ import {
   Box,
   Button,
   Card,
-  CardActionArea,
   CardContent,
   Link,
-  Snackbar,
-  styled,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import Image from "next/image";
@@ -60,20 +58,30 @@ const BridgeWalletInfo: React.FC<IProps> = ({ label, network, walletType }) => {
             alt="PaliWallet logo"
           />
           {transfer.status === "initialize" ? (
-            utxo.account ? (
-              <Typography variant="body2">{utxo.account}</Typography>
+            utxo.xpub ? (
+              transfer.type === "sys-to-nevm" ? (
+                <Tooltip title={`${utxo.xpub}`} placement="top">
+                  <Typography variant="body2" noWrap maxWidth={"70%"}>
+                    {utxo.xpub}
+                  </Typography>
+                </Tooltip>
+              ) : (
+                <Tooltip title={`${utxo.account}`} placement="top">
+                  <Typography variant="body2" noWrap maxWidth={"70%"}>
+                    {utxo.account}
+                  </Typography>
+                </Tooltip>
+              )
             ) : (
               <Button onClick={() => connectUTXO("pali-wallet")}>
                 Connect
               </Button>
             )
-          ) : utxo.account ? (
-            utxo.account === transfer.utxoAddress ? (
+          ) : utxo.xpub ? (
+            utxo.xpub === transfer.utxoAddress ? (
               <Typography variant="body2">{transfer.utxoAddress}</Typography>
             ) : (
-              <Typography variant="body2">
-                Change to {transfer.utxoAddress}
-              </Typography>
+              <Typography variant="body2">Change to {transfer.utxoAddress}</Typography>
             )
           ) : (
             <Button onClick={() => connectUTXO("pali-wallet")}>

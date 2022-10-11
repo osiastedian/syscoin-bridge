@@ -31,8 +31,8 @@ const TransfersPage: NextPage = () => {
     "transfers",
     () => {
       const searchParams = new URLSearchParams();
-      if (utxo.account) {
-        searchParams.set("utxo", utxo.account);
+      if (utxo.xpub) {
+        searchParams.set("utxo", utxo.xpub);
       }
       if (nevm.account) {
         searchParams.set("nevm", nevm.account);
