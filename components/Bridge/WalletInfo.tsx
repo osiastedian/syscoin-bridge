@@ -1,3 +1,5 @@
+import { UTXOInfo } from "@contexts/ConnectedWallet/types";
+import { TransferType } from "@contexts/Transfer/types";
 import { useTransfer } from "@contexts/Transfer/useTransfer";
 import {
   Alert,
@@ -24,6 +26,29 @@ interface IProps {
     symbol: string;
   };
 }
+
+const UTXOAddress: React.FC<{
+  type: TransferType;
+  utxo: Partial<UTXOInfo>;
+}> = ({ type, utxo }) => {
+  if (type === "sys-to-nevm") {
+    return (
+      <Tooltip title={`${utxo.xpub}`} placement="top">
+        <Typography variant="body2" noWrap maxWidth={"70%"}>
+          {utxo.xpub}
+        </Typography>
+      </Tooltip>
+    );
+  }
+
+  return (
+    <Tooltip title={`${utxo.account}`} placement="top">
+      <Typography variant="body2" noWrap maxWidth={"70%"}>
+        {utxo.account}
+      </Typography>
+    </Tooltip>
+  );
+};
 
 const BridgeWalletInfo: React.FC<IProps> = ({ label, network, walletType }) => {
   const { nevm, utxo, connectUTXO, connectNEVM } = useConnectedWallet();
@@ -59,19 +84,7 @@ const BridgeWalletInfo: React.FC<IProps> = ({ label, network, walletType }) => {
           />
           {transfer.status === "initialize" ? (
             utxo.xpub ? (
-              transfer.type === "sys-to-nevm" ? (
-                <Tooltip title={`${utxo.xpub}`} placement="top">
-                  <Typography variant="body2" noWrap maxWidth={"70%"}>
-                    {utxo.xpub}
-                  </Typography>
-                </Tooltip>
-              ) : (
-                <Tooltip title={`${utxo.account}`} placement="top">
-                  <Typography variant="body2" noWrap maxWidth={"70%"}>
-                    {utxo.account}
-                  </Typography>
-                </Tooltip>
-              )
+              <UTXOAddress type={transfer.type} utxo={utxo} />
             ) : (
               <Button onClick={() => connectUTXO("pali-wallet")}>
                 Connect
@@ -79,9 +92,11 @@ const BridgeWalletInfo: React.FC<IProps> = ({ label, network, walletType }) => {
             )
           ) : utxo.xpub ? (
             utxo.xpub === transfer.utxoAddress ? (
-              <Typography variant="body2">{transfer.utxoAddress}</Typography>
+              <UTXOAddress type={transfer.type} utxo={utxo} />
             ) : (
-              <Typography variant="body2">Change to {transfer.utxoAddress}</Typography>
+              <Typography variant="body2">
+                Change to {transfer.utxoAddress}
+              </Typography>
             )
           ) : (
             <Button onClick={() => connectUTXO("pali-wallet")}>
