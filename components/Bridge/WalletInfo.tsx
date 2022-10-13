@@ -31,16 +31,6 @@ const UTXOAddress: React.FC<{
   type: TransferType;
   utxo: Partial<UTXOInfo>;
 }> = ({ type, utxo }) => {
-  if (type === "sys-to-nevm") {
-    return (
-      <Tooltip title={`${utxo.xpub}`} placement="top">
-        <Typography variant="body2" noWrap maxWidth={"70%"}>
-          {utxo.xpub}
-        </Typography>
-      </Tooltip>
-    );
-  }
-
   return (
     <Tooltip title={`${utxo.account}`} placement="top">
       <Typography variant="body2" noWrap maxWidth={"70%"}>

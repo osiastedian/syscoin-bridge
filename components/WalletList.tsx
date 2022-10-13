@@ -24,7 +24,7 @@ const WalletList: React.FC = () => {
               noWrap
               maxWidth={"70%"}
             >
-              {utxo.xpub}
+              {utxo.account}
             </Typography>
             <Typography
               variant="body1"
