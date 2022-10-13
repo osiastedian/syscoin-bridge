@@ -33,7 +33,7 @@ const UTXOAddress: React.FC<{
 }> = ({ type, utxo }) => {
   return (
     <Tooltip title={`${utxo.account}`} placement="top">
-      <Typography variant="body2" noWrap maxWidth={"70%"}>
+      <Typography variant="body2" noWrap>
         {utxo.account}
       </Typography>
     </Tooltip>

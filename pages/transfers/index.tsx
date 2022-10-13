@@ -94,7 +94,7 @@ const TransfersPage: NextPage = () => {
             },
             {
               field: "utxoAddress",
-              headerName: "UTXO",
+              headerName: "ZPUB",
               width: 320,
             },
             {
