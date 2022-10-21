@@ -33,8 +33,8 @@ const WalletList: React.FC = () => {
           <>
             <Typography variant="body1">PaliWallet</Typography>
             <Link
-              href="https://chrome.google.com/webstore/detail/pali-wallet/mgffkfbidihjpoaomajlbgchddlicgpn"
-              title="Download Pali Wallet"
+              href="https://paliwallet.com/"
+              title="Go to PaliWallet"
             >
               <Launch />
             </Link>
@@ -77,10 +77,7 @@ const WalletList: React.FC = () => {
         ) : (
           <>
             <Typography variant="body1">Metamask</Typography>
-            <Link
-              href="https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn"
-              title="Download Metamask"
-            >
+            <Link href="https://metamask.io/" title="Go to Metamask">
               <Launch />
             </Link>
             <Button
