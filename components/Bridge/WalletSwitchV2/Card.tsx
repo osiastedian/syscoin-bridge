@@ -1,4 +1,4 @@
-import { Alert, Box, Button, Link, Typography } from "@mui/material";
+import { Alert, Box, Button, Link, Typography, useTheme } from "@mui/material";
 import Check from "@mui/icons-material/Check";
 
 type WalletSwitchCardProps = {
@@ -16,6 +16,9 @@ const WalletSwitchCard: React.FC<WalletSwitchCardProps> = ({
   allowChange,
   faucetLink,
 }) => {
+  const {
+    palette: { success },
+  } = useTheme();
   return (
     <Box>
       <Box
@@ -28,7 +31,10 @@ const WalletSwitchCard: React.FC<WalletSwitchCardProps> = ({
         <Typography variant="body2" noWrap display="block" marginRight="auto">
           {address}
         </Typography>
-        <Check color="success" />
+        <Typography variant="body2" color={success.main}>
+          Confirmed
+          <Check color="success" />
+        </Typography>
       </Box>
       <Box display="flex" sx={{ alignItems: "center" }}>
         <Typography marginRight="auto">Balance: {balance}</Typography>

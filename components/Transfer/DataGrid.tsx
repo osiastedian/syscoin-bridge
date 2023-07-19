@@ -24,6 +24,7 @@ type TransferDataGridProps = {
   isFullyConnected: boolean;
   items: ITransfer[];
   version?: string;
+  bridgeVersion?: string;
 };
 const TransferDataGrid: React.FC<TransferDataGridProps> = ({
   account,
@@ -31,6 +32,7 @@ const TransferDataGrid: React.FC<TransferDataGridProps> = ({
   isFullyConnected,
   items,
   version,
+  bridgeVersion,
 }) => {
   const { data, isFetched, isLoading, error } = useQuery(
     "transfers",
@@ -60,7 +62,7 @@ const TransferDataGrid: React.FC<TransferDataGridProps> = ({
           renderCell: ({ value, row }) => (
             <NextLink
               href={`/bridge/${
-                row.version !== "v1" ? row.version + "/" : ""
+                row.version !== "v1" ? (bridgeVersion ?? row.version) + "/" : ""
               }${value}`}
             >
               <Typography

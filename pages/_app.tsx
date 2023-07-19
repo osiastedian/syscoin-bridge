@@ -10,7 +10,14 @@ import NEVMProvider from "@contexts/ConnectedWallet/NEVMProvider";
 
 const queryClient = new QueryClient();
 
-function MyApp({ Component, pageProps }: AppProps) {
+function MyApp({ Component, pageProps, router }: AppProps) {
+  if (router.pathname.includes("/bridge/v3/")) {
+    return (
+      <ThemeProvider theme={theme}>
+        <Component {...pageProps} />
+      </ThemeProvider>
+    );
+  }
   return (
     <QueryClientProvider client={queryClient}>
       <PaliWalletV2Provider>

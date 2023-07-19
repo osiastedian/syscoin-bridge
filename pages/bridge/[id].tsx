@@ -4,26 +4,22 @@ import {
   CircularProgress,
   Container,
   Grid,
-  IconButton,
   Typography,
 } from "@mui/material";
 import { NextPage } from "next";
-import BridgeWalletInfo from "../../components/Bridge/WalletInfo";
 import DrawerPage from "../../components/DrawerPage";
 import TransferProvider from "../../contexts/Transfer/Provider";
 import BridgeTransferStepSwitch from "components/Bridge/Transfer/StepSwitch";
 import BridgeTransferStepper from "components/Bridge/Stepper";
 import { useRouter } from "next/router";
-import { ArrowForward, CompareArrows } from "@mui/icons-material";
 import { ITransfer } from "contexts/Transfer/types";
 import BridgeWalletSwitch from "components/Bridge/WalletSwitch";
-import { useTransfer } from "@contexts/Transfer/useTransfer";
 import { usePaliWallet } from "@contexts/PaliWallet/usePaliWallet";
-import { useMetamask } from "@contexts/Metamask/Provider";
 import BlocktimeDisclaimer from "components/BlocktimeDisclaimer";
 import TransferTitle from "components/Bridge/Transfer/Title";
 import { useNEVM } from "@contexts/ConnectedWallet/NEVMProvider";
-import { useEffect } from "react";
+import { INavigationItem } from "components/Navigation/Item";
+import { useConnectedWallet } from "@contexts/ConnectedWallet/useConnectedWallet";
 
 interface Props {
   transfer: ITransfer;
@@ -33,7 +29,23 @@ const Bridge: NextPage<Props> = ({ transfer }) => {
   const router = useRouter();
   const paliWallet = usePaliWallet();
   const metamask = useNEVM();
+  const { nevm, utxo } = useConnectedWallet();
   const { id } = router.query;
+
+  const routes: INavigationItem[] = [
+    {
+      label: "New Transfer",
+      path: `/bridge/${utxo.type === nevm.type ? "v2/" : ""}${Date.now()}`,
+    },
+    {
+      label: "My Transfers",
+      path: "/transfers",
+    },
+    {
+      label: "FAQ",
+      path: "/#faq",
+    },
+  ];
 
   if (!id) {
     return <CircularProgress />;
@@ -41,7 +53,7 @@ const Bridge: NextPage<Props> = ({ transfer }) => {
 
   return (
     <TransferProvider id={id as string}>
-      <DrawerPage>
+      <DrawerPage routes={routes}>
         <BlocktimeDisclaimer />
         <Container sx={{ mt: 10 }}>
           {paliWallet.isTestnet && (
@@ -69,7 +81,7 @@ const Bridge: NextPage<Props> = ({ transfer }) => {
             Trustlessly transfer SYS back and forth between the Syscoin Base and
             Syscoin NEVM blockchains without middlemen!
           </Typography>
-          <TransferTitle />
+          <TransferTitle sx={{ my: 3 }} />
           <BridgeWalletSwitch />
           <BridgeTransferStepper />
           <Grid container>

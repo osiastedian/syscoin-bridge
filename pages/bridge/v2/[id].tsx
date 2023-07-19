@@ -9,12 +9,28 @@ import BridgeWalletSwitch from "components/Bridge/WalletSwitchV2";
 import TransferTitle from "components/Bridge/Transfer/Title";
 import BridgeTransferStepSwitch from "components/Bridge/Transfer/StepSwitch";
 import { useConnectedWallet } from "@contexts/ConnectedWallet/useConnectedWallet";
+import { INavigationItem } from "components/Navigation/Item";
 
 const Bridge: NextPage = () => {
   const { nevm, utxo } = useConnectedWallet();
   const router = useRouter();
 
   const { id } = router.query;
+
+  const routes: INavigationItem[] = [
+    {
+      label: "New Transfer",
+      path: `/bridge/${utxo.type === nevm.type ? "v2/" : ""}${Date.now()}`,
+    },
+    {
+      label: "My Transfers",
+      path: "/transfers",
+    },
+    {
+      label: "FAQ",
+      path: "/#faq",
+    },
+  ];
 
   if (!id) {
     return <CircularProgress />;
@@ -25,7 +41,7 @@ const Bridge: NextPage = () => {
       id={id as string}
       includeSwitchStep={nevm.type === utxo.type}
     >
-      <DrawerPage>
+      <DrawerPage routes={routes}>
         <BlocktimeDisclaimer />
         <Container sx={{ mt: 10 }}>
           <Typography variant="h5" fontWeight="bold">
@@ -35,7 +51,7 @@ const Bridge: NextPage = () => {
             Trustlessly transfer SYS back and forth between the Syscoin Base and
             Syscoin NEVM blockchains without middlemen!
           </Typography>
-          <TransferTitle />
+          <TransferTitle sx={{ my: 3 }} />
           <BridgeWalletSwitch />
           <BridgeTransferStepper />
           <Grid container>

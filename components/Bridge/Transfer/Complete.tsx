@@ -2,7 +2,6 @@ import { ArrowForward } from "@mui/icons-material";
 import {
   Alert,
   Box,
-  Button,
   Card,
   CardActions,
   CardContent,
@@ -14,11 +13,8 @@ import LoadingButton from "@mui/lab/LoadingButton";
 
 import { useTransfer } from "contexts/Transfer/useTransfer";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useConnectedWallet } from "@contexts/ConnectedWallet/useConnectedWallet";
-import { TransactionReceipt } from "web3-core";
-import { utils } from "syscoinjs-lib";
-import { usePaliWallet } from "@contexts/PaliWallet/usePaliWallet";
 
 const SYSCOIN_TX_BLOCKCHAIN_URL = "https://blockbook.elint.services/tx/";
 const NEVM_TX_BLOCKCHAIN_URL = "https://explorer.syscoin.org/tx/";

@@ -47,13 +47,13 @@ const PaliV2Bridge = () => {
   return (
     <>
       <Box display="flex" justifyContent="space-between">
-        <Link href={`/bridge/v2/${Date.now()}`}>
+        <Link href={`/bridge/v3/sys-to-nevm`}>
           <Button variant="contained">
             Go to PaliV2 Bridge
             <ArrowForwardIcon />
           </Button>
         </Link>
-        <Link href={`/transfers`}>
+        <Link href={`/transfers/v2`}>
           <Button variant="text" color="secondary">
             View My Transfers
           </Button>

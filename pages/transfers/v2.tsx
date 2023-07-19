@@ -1,7 +1,6 @@
 import { usePaliWalletV2 } from "@contexts/PaliWallet/usePaliWallet";
 import { Alert, Box, Button, Container, Typography } from "@mui/material";
-import DrawerPage from "components/DrawerPage";
-import { INavigationItem } from "components/Navigation/Item";
+import AddIcon from "@mui/icons-material/Add";
 import TransferDataGrid from "components/Transfer/DataGrid";
 import WalletList from "components/WalletList";
 import { useConnectedWallet } from "contexts/ConnectedWallet/useConnectedWallet";
@@ -22,21 +21,6 @@ const TransfersPage: NextPage = () => {
     ? isPaliV2Connected
     : Boolean(utxo.account && nevm.account);
 
-  const routes: INavigationItem[] = [
-    {
-      label: "New Transfer",
-      path: `/bridge/${utxo.type === nevm.type ? "v2/" : ""}${Date.now()}`,
-    },
-    {
-      label: "My Transfers",
-      path: "/transfers",
-    },
-    {
-      label: "FAQ",
-      path: "/#faq",
-    },
-  ];
-
   useEffect(() => {
     if (!localStorage) {
       return;
@@ -49,26 +33,32 @@ const TransfersPage: NextPage = () => {
   }, []);
 
   return (
-    <DrawerPage routes={routes}>
-      <Container sx={{ py: 10 }}>
-        <Typography variant="h5" marginBottom={"1rem"}>
-          Transfers
-        </Typography>
-        <TransferDataGrid
-          account={nevm.account}
-          isFullyConnected={isFullyConnected}
-          items={items}
-          xpub={utxo.xpub}
-          version={onlyV2 ? version : undefined}
-        />
-        {!isFullyConnected && (
-          <Alert severity="info" sx={{ mb: 2 }}>
-            <Typography variant="body1">Connect both wallets</Typography>
-          </Alert>
-        )}
-        <WalletList />
-      </Container>
-    </DrawerPage>
+    <Container sx={{ py: 10 }}>
+      <Box display="flex" marginBottom={"1rem"}>
+        <Typography variant="h5">Transfers</Typography>
+        <Button
+          LinkComponent={NextLink}
+          href="/bridge/v3/sys-to-nevm"
+          sx={{ ml: "auto" }}
+        >
+          <AddIcon /> New Transfer
+        </Button>
+      </Box>
+      <TransferDataGrid
+        account={nevm.account}
+        isFullyConnected={isFullyConnected}
+        items={items}
+        xpub={utxo.xpub}
+        version={onlyV2 ? version : undefined}
+        bridgeVersion="v3"
+      />
+      {!isFullyConnected && (
+        <Alert severity="info" sx={{ mb: 2 }}>
+          <Typography variant="body1">Connect both wallets</Typography>
+        </Alert>
+      )}
+      <WalletList />
+    </Container>
   );
 };
 

@@ -1,7 +1,6 @@
-import { Button, IconButton, Tooltip, Typography } from "@mui/material";
+import { Button, Typography } from "@mui/material";
 import ChangeCirlce from "@mui/icons-material/ChangeCircle";
 import { Box } from "@mui/system";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 
 type WalletSwitchConfirmCardProps = {
   address: string;
@@ -21,20 +20,20 @@ const WalletSwitchConfirmCard: React.FC<WalletSwitchConfirmCardProps> = ({
         variant="contained"
         aria-label="Change"
         onClick={onChange}
-        color="primary"
+        color="secondary"
         size="small"
       >
-        Change <ChangeCirlce sx={{ ml: 1 }} />
+        Change <ChangeCirlce />
       </Button>
       <Button
         variant="contained"
-        aria-label="Change"
+        aria-label="Set"
         onClick={onConfirm}
-        color="success"
+        color="primary"
         sx={{ ml: 1 }}
         size="small"
       >
-        Confirm <CheckCircleIcon sx={{ ml: 1 }} />
+        Set
       </Button>
     </Box>
   );

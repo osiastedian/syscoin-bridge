@@ -1,4 +1,4 @@
-import { createContext, useContext, useMemo, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { TransactionConfig } from "web3-core";
 import Web3 from "web3";
 import { NEVMNetwork } from "../Transfer/constants";
@@ -12,10 +12,13 @@ interface INEVMContext {
   account?: string;
   balance?: string;
   isTestnet: boolean;
+  chainId?: string;
   switchToMainnet: () => void;
   sendTransaction: (transactionConfig: TransactionConfig) => Promise<string>;
   connect: () => void;
 }
+
+export const MAINNET_CHAIN_ID = "0x39";
 
 const NEVMContext = createContext({} as INEVMContext);
 
@@ -26,6 +29,8 @@ type NEVMProviderProps = {
 };
 
 const NEVMProvider: React.FC<NEVMProviderProps> = ({ children }) => {
+  const [isChainChangedCallbackSet, setIsChainChangedCallbackSet] =
+    useState(false);
   const { data: isEthereumAvailable } = useQuery(["nevm", "isEthAvailable"], {
     queryFn: () => {
       return typeof window.ethereum !== "undefined";
@@ -74,9 +79,9 @@ const NEVMProvider: React.FC<NEVMProviderProps> = ({ children }) => {
       if (
         result.length > 0 &&
         typeof result[0] === "string" &&
-        web3?.utils.isAddress(result[0] as string)
+        web3?.utils.isAddress(result[0])
       ) {
-        return result[0] as string;
+        return result[0];
       }
       return Promise.reject("No account found");
     },
@@ -95,6 +100,12 @@ const NEVMProvider: React.FC<NEVMProviderProps> = ({ children }) => {
     enabled: Boolean(isEnabled && account.isFetched && account.data),
   });
 
+  const chainId = useQuery(
+    ["nevm", "chainId"],
+    async () => window.ethereum.request({ method: "eth_chainId" }),
+    { enabled: isEnabled, refetchOnMount: true, refetchOnWindowFocus: true }
+  );
+
   const sendTransaction = (config: TransactionConfig) => {
     return window.ethereum.request({
       method: "eth_sendTransaction",
@@ -106,8 +117,9 @@ const NEVMProvider: React.FC<NEVMProviderProps> = ({ children }) => {
     window.ethereum
       .request({
         method: "wallet_switchEthereumChain",
-        params: [{ chainId: "0x39" }],
+        params: [{ chainId: MAINNET_CHAIN_ID }],
       })
+      .then(() => chainId.refetch())
       .catch((err) => {
         const { code } = err;
         captureException(err);
@@ -124,6 +136,15 @@ const NEVMProvider: React.FC<NEVMProviderProps> = ({ children }) => {
     account.refetch();
   };
 
+  useEffect(() => {
+    if (chainId.isFetched && !isChainChangedCallbackSet) {
+      window.ethereum.on("chainChanged", () => {
+        chainId.refetch();
+      });
+      setIsChainChangedCallbackSet(true);
+    }
+  }, [chainId.isFetched, chainId, isChainChangedCallbackSet]);
+
   return (
     <NEVMContext.Provider
       value={{
@@ -133,6 +154,7 @@ const NEVMProvider: React.FC<NEVMProviderProps> = ({ children }) => {
         isTestnet: !!isTestnet,
         switchToMainnet,
         connect,
+        chainId: chainId.isSuccess && chainId.data ? chainId.data : undefined,
       }}
     >
       {children}

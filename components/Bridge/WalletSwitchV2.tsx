@@ -27,6 +27,7 @@ const WalletInfoCard: React.FC<WalletInfoCardProps> = ({
   network,
   walletType,
 }) => {
+  const { transfer, setUtxo, setNevm } = useTransfer();
   return (
     <Card variant="outlined" sx={{ mb: 1 }}>
       <CardContent
@@ -45,8 +46,12 @@ const WalletInfoCard: React.FC<WalletInfoCardProps> = ({
           <Typography variant="h6" display="block">
             {network.name}
           </Typography>
-          {walletType === "utxo" && <UTXOConnect />}
-          {walletType === "nevm" && <NEVMConnect />}
+          {walletType === "utxo" && (
+            <UTXOConnect setUtxo={setUtxo} transfer={transfer} />
+          )}
+          {walletType === "nevm" && (
+            <NEVMConnect setNevm={setNevm} transfer={transfer} />
+          )}
         </Box>
       </CardContent>
     </Card>

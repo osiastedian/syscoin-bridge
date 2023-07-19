@@ -41,6 +41,7 @@ const patchRequest = async (req: NextApiRequest, res: NextApiResponse) => {
   const results = await getDoc(document);
 
   if (results.exists()) {
+    transferBody.updatedAt = Date.now()
     await updateDoc(document, transferBody);
   } else {
     await setDoc(document, transferBody);

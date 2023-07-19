@@ -1,27 +1,20 @@
 import { useNEVM } from "@contexts/ConnectedWallet/NEVMProvider";
 import { usePaliWalletV2 } from "@contexts/PaliWallet/usePaliWallet";
-import { useTransfer } from "@contexts/Transfer/useTransfer";
 import { Alert, Button, Link, Typography } from "@mui/material";
-import { useQuery } from "react-query";
 import WalletSwitchCard from "./Card";
 import WalletSwitchConfirmCard from "./ConfirmCard";
+import { ITransfer } from "@contexts/Transfer/types";
+import { useNevmBalance } from "utils/balance-hooks";
 
-const NEVMConnect = () => {
-  const { transfer, setNevm } = useTransfer();
-  const { account, connect } = useNEVM();
+type NEVMConnectProps = {
+  transfer: ITransfer;
+  setNevm: (nevm: { address: string }) => void;
+};
+
+const NEVMConnect: React.FC<NEVMConnectProps> = ({ setNevm, transfer }) => {
+  const { account, connect, switchToMainnet } = useNEVM();
   const { isBitcoinBased, switchTo, changeAccount } = usePaliWalletV2();
-  const balance = useQuery(
-    ["nevm", "balance", transfer.nevmAddress],
-    async () => {
-      if (!transfer.nevmAddress) return Promise.resolve(0);
-      const url = `https://explorer.syscoin.org/api?module=account&action=eth_get_balance&address=${transfer.nevmAddress}&tag=latest`;
-      const ethBalanceInHex = await fetch(url)
-        .then((res) => res.json())
-        .then((rpcResp) => rpcResp.result);
-      const ethBalance = parseInt(ethBalanceInHex) / Math.pow(10, 18);
-      return ethBalance;
-    }
-  );
+  const balance = useNevmBalance(transfer.nevmAddress);
 
   const setTransferNevm = () => {
     if (!account) return;
@@ -71,7 +64,7 @@ const NEVMConnect = () => {
   if (isBitcoinBased) {
     return (
       <Button variant="contained" onClick={() => switchTo("ethereum")}>
-        Set NEVM
+        Set NEVM Account
       </Button>
     );
   }

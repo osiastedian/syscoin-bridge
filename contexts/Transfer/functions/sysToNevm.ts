@@ -4,7 +4,7 @@ import { SPVProof, syscoin, utils as syscoinUtils } from "syscoinjs-lib";
 import { BlockbookAPIURL, SYSX_ASSET_GUID } from "../constants";
 import burnSysToSysx from "./burnSysToSysx";
 import burnSysx from "./burnSysx";
-import { addLog, setStatus, TransferActions } from "../store/actions";
+import { addLog, TransferActions } from "../store/actions";
 import { ITransfer } from "../types";
 import Web3 from "web3";
 import { Contract } from "web3-eth-contract";
