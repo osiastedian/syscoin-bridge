@@ -1,17 +1,22 @@
-import { TransferStatus } from "@contexts/Transfer/types";
+import {
+  COMMON_STATUS,
+  ETH_TO_SYS_TRANSFER_STATUS,
+  SYS_TO_ETH_TRANSFER_STATUS,
+  TransferStatus,
+} from "@contexts/Transfer/types";
 
 export const sysToNevmSteps: TransferStatus[] = [
-  "initialize",
-  "burn-sys",
-  "burn-sysx",
-  "submit-proofs",
-  "completed",
+  COMMON_STATUS.INITIALIZE,
+  SYS_TO_ETH_TRANSFER_STATUS.BURN_SYS,
+  SYS_TO_ETH_TRANSFER_STATUS.BURN_SYSX,
+  SYS_TO_ETH_TRANSFER_STATUS.SUBMIT_PROOFS,
+  COMMON_STATUS.COMPLETED,
 ];
 
 export const nevmToSysSteps: TransferStatus[] = [
-  "initialize",
-  "freeze-burn-sys",
-  "mint-sysx",
-  "burn-sysx",
-  "completed",
+  COMMON_STATUS.INITIALIZE,
+  ETH_TO_SYS_TRANSFER_STATUS.FREEZE_BURN_SYS,
+  ETH_TO_SYS_TRANSFER_STATUS.MINT_SYSX,
+  ETH_TO_SYS_TRANSFER_STATUS.BURN_SYSX,
+  COMMON_STATUS.INITIALIZE,
 ];

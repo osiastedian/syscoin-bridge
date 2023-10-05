@@ -1,7 +1,11 @@
 import { Alert, Box, Button, Typography } from "@mui/material";
 import UTXOStepWrapper from "../UTXOStepWrapper";
 import { useTransfer } from "../context/TransferContext";
-import { ITransferLog, TransferStatus } from "@contexts/Transfer/types";
+import {
+  ITransferLog,
+  SYS_TO_ETH_TRANSFER_STATUS,
+  TransferStatus,
+} from "@contexts/Transfer/types";
 import { useBurnSysx } from "../hooks/useBurnSysx";
 
 const isError = (error: unknown): error is Error => {
@@ -33,7 +37,7 @@ const BurnSysx: React.FC<BurnSysProps> = ({ successStatus, toNevm }) => {
           },
           message: "Burning SYSX to NEVM",
         },
-        status: "burn-sysx",
+        status: SYS_TO_ETH_TRANSFER_STATUS.BURN_SYSX,
       },
     ];
     saveTransfer({
@@ -54,7 +58,7 @@ const BurnSysx: React.FC<BurnSysProps> = ({ successStatus, toNevm }) => {
           },
           message: "Burning SYSX to NEVM",
         },
-        status: "burn-sysx",
+        status: SYS_TO_ETH_TRANSFER_STATUS.BURN_SYSX,
       },
     ];
     saveTransfer({

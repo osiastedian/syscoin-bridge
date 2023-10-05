@@ -7,7 +7,7 @@ import {
   useState,
 } from "react";
 import reducer from "./store/reducer";
-import { ITransfer, TransferStatus, TransferType } from "./types";
+import { COMMON_STATUS, ETH_TO_SYS_TRANSFER_STATUS, ITransfer, SYS_TO_ETH_TRANSFER_STATUS, TransferStatus, TransferType } from "./types";
 
 import { useConnectedWallet } from "../ConnectedWallet/useConnectedWallet";
 import {
@@ -73,7 +73,7 @@ const TransferProvider: React.FC<TransferProviderProps> = ({
       amount: "0",
       id,
       type: "sys-to-nevm",
-      status: "initialize",
+      status: COMMON_STATUS.INITIALIZE,
       logs: [],
       createdAt: Date.now(),
       version: "v1",
@@ -133,12 +133,12 @@ const TransferProvider: React.FC<TransferProviderProps> = ({
     }
     updateAmount(`${amount}`);
     dispatch(setVersion(utxo.type === nevm.type ? "v2" : "v1"));
-    dispatch(setStatus("initialize"));
-    dispatch(addLog("initialize", "Starting Sys to NEVM transfer", transfer));
+    dispatch(setStatus(COMMON_STATUS.INITIALIZE));
+    dispatch(addLog(COMMON_STATUS.INITIALIZE, "Starting Sys to NEVM transfer", transfer));
     if (transfer.type === "sys-to-nevm") {
-      dispatch(setStatus("burn-sys"));
+      dispatch(setStatus(SYS_TO_ETH_TRANSFER_STATUS.BURN_SYS));
     } else if (transfer.type === "nevm-to-sys") {
-      dispatch(setStatus("freeze-burn-sys"));
+      dispatch(setStatus(ETH_TO_SYS_TRANSFER_STATUS.FREEZE_BURN_SYS));
     }
   };
 
@@ -184,7 +184,7 @@ const TransferProvider: React.FC<TransferProviderProps> = ({
     if (nextStep) {
       dispatch(setStatus(nextStep.id));
     } else if (transfer.status === "finalizing") {
-      dispatch(setStatus("completed"));
+      dispatch(setStatus(COMMON_STATUS.COMPLETED));
     }
   }, [steps, transfer.status, dispatch]);
 
@@ -303,7 +303,7 @@ const TransferProvider: React.FC<TransferProviderProps> = ({
 
   useEffect(() => {
     setIsInitialized(false);
-  }, [id]);
+  }, [id, setIsInitialized]);
 
   return (
     <TransferContext.Provider

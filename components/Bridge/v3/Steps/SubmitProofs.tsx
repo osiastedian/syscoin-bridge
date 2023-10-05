@@ -1,6 +1,10 @@
 import { Alert, Box, Button, Divider, Typography } from "@mui/material";
 import { useTransfer } from "../context/TransferContext";
-import { ITransferLog, TransferStatus } from "@contexts/Transfer/types";
+import {
+  ITransferLog,
+  SYS_TO_ETH_TRANSFER_STATUS,
+  TransferStatus,
+} from "@contexts/Transfer/types";
 import { isSpvProof, useSubmitProof } from "../hooks/useSubmitProof";
 import NEVMStepWrapper from "../NEVMStepWrapepr";
 import useSyscoinSubmitProofs from "../hooks/useSyscoinSubmitProofs";
@@ -29,9 +33,9 @@ const SubmitProofs: React.FC<Props> = ({ successStatus }) => {
             hash: data,
           },
           message: "submit-proofs",
-          previousStatus: "generate-proofs",
+          previousStatus: SYS_TO_ETH_TRANSFER_STATUS.GENERATE_PROOFS,
         },
-        status: "submit-proofs",
+        status: SYS_TO_ETH_TRANSFER_STATUS.SUBMIT_PROOFS,
       },
     ];
 

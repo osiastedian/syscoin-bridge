@@ -2,7 +2,11 @@ import { Alert, Box, Button, Typography } from "@mui/material";
 import NEVMStepWrapper from "../NEVMStepWrapepr";
 import { useTransfer } from "../context/TransferContext";
 import { useFreezeAndBurn } from "../hooks/useFreezeAndBurn";
-import { ITransferLog, TransferStatus } from "@contexts/Transfer/types";
+import {
+  ETH_TO_SYS_TRANSFER_STATUS,
+  ITransferLog,
+  TransferStatus,
+} from "@contexts/Transfer/types";
 
 type Props = {
   successStatus: TransferStatus;
@@ -29,7 +33,7 @@ const FreezeAndBurn: React.FC<Props> = ({ successStatus }) => {
           },
           message: "Freeze and Burn SYS",
         },
-        status: "freeze-burn-sys",
+        status: ETH_TO_SYS_TRANSFER_STATUS.FREEZE_BURN_SYS,
       },
     ];
     saveTransfer({
@@ -50,7 +54,7 @@ const FreezeAndBurn: React.FC<Props> = ({ successStatus }) => {
           },
           message: "Freeze and Burn SYS Error",
         },
-        status: "freeze-burn-sys",
+        status: ETH_TO_SYS_TRANSFER_STATUS.FREEZE_BURN_SYS,
       },
     ];
     saveTransfer({

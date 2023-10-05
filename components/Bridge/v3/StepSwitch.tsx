@@ -1,3 +1,8 @@
+import {
+  COMMON_STATUS,
+  ETH_TO_SYS_TRANSFER_STATUS,
+  SYS_TO_ETH_TRANSFER_STATUS,
+} from "@contexts/Transfer/types";
 import BridgeV3StepBurnSys from "./Steps/BurnSys";
 import BridgeV3StepBurnSysx from "./Steps/BurnSysx";
 import BridgeV3CompleteNevmToSys from "./Steps/CompleteNevmToSys";
@@ -14,90 +19,123 @@ import { useTransfer } from "./context/TransferContext";
 const BridgeV3StepSwitch = () => {
   const { transfer } = useTransfer();
   if (transfer.type === "nevm-to-sys") {
-    if (transfer.status === "initialize") {
-      return <BridgeV3ConnectValidateStep successStatus="freeze-burn-sys" />;
-    } else if (transfer.status === "freeze-burn-sys") {
+    if (transfer.status === COMMON_STATUS.INITIALIZE) {
       return (
-        <BridgeV3StepFreezeAndBurnSys successStatus="confirm-freeze-burn-sys" />
+        <BridgeV3ConnectValidateStep
+          successStatus={ETH_TO_SYS_TRANSFER_STATUS.FREEZE_BURN_SYS}
+        />
       );
-    } else if (transfer.status === "confirm-freeze-burn-sys") {
+    } else if (transfer.status === ETH_TO_SYS_TRANSFER_STATUS.FREEZE_BURN_SYS) {
+      return (
+        <BridgeV3StepFreezeAndBurnSys
+          successStatus={ETH_TO_SYS_TRANSFER_STATUS.CONFIRM_FREEZE_BURN_SYS}
+        />
+      );
+    } else if (
+      transfer.status === ETH_TO_SYS_TRANSFER_STATUS.CONFIRM_FREEZE_BURN_SYS
+    ) {
       return (
         <BridgeV3ConfirmNEVMTransaction
           invalidStateMessage="Invalid State: Freeze and Burn logs was not saved"
           loadingMessage="Confirming freeze and burn transaction..."
-          sourceStatus="freeze-burn-sys"
-          successStatus="mint-sysx"
+          sourceStatus={ETH_TO_SYS_TRANSFER_STATUS.FREEZE_BURN_SYS}
+          successStatus={ETH_TO_SYS_TRANSFER_STATUS.MINT_SYSX}
         />
       );
-    } else if (transfer.status === "mint-sysx") {
-      return <BridgeV3StepMintSysx successStatus="confirm-mint-sysx" />;
-    } else if (transfer.status === "confirm-mint-sysx") {
+    } else if (transfer.status === ETH_TO_SYS_TRANSFER_STATUS.MINT_SYSX) {
+      return (
+        <BridgeV3StepMintSysx
+          successStatus={ETH_TO_SYS_TRANSFER_STATUS.CONFIRM_MINT_SYSX}
+        />
+      );
+    } else if (
+      transfer.status === ETH_TO_SYS_TRANSFER_STATUS.CONFIRM_MINT_SYSX
+    ) {
       return (
         <BridgeV3StepConfirmUTXOTransaction
           invalidStateMessage="Invalid State: Mint Sysx transaction was not saved"
           loadingMessage="Confirming Mint of Sysx transaction..."
-          sourceStatus="mint-sysx"
-          successStatus="burn-sysx"
+          sourceStatus={ETH_TO_SYS_TRANSFER_STATUS.MINT_SYSX}
+          successStatus={ETH_TO_SYS_TRANSFER_STATUS.BURN_SYSX}
         />
       );
-    } else if (transfer.status === "burn-sysx") {
+    } else if (transfer.status === ETH_TO_SYS_TRANSFER_STATUS.BURN_SYSX) {
       return (
         <BridgeV3StepBurnSysx
-          successStatus="confirm-burn-sysx"
+          successStatus={ETH_TO_SYS_TRANSFER_STATUS.CONFIRM_BURN_SYSX}
           toNevm={false}
         />
       );
-    } else if (transfer.status === "confirm-burn-sysx") {
+    } else if (
+      transfer.status === ETH_TO_SYS_TRANSFER_STATUS.CONFIRM_BURN_SYSX
+    ) {
       return (
         <BridgeV3StepConfirmUTXOTransaction
           invalidStateMessage="Invalid State: Burn Sysx transaction was not saved"
           loadingMessage="Confirming Burn of Sysx transaction..."
-          sourceStatus="burn-sysx"
-          successStatus="completed"
+          sourceStatus={ETH_TO_SYS_TRANSFER_STATUS.BURN_SYSX}
+          successStatus={COMMON_STATUS.COMPLETED}
         />
       );
-    } else if (transfer.status === "completed") {
+    } else if (transfer.status === COMMON_STATUS.COMPLETED) {
       return <BridgeV3CompleteNevmToSys transfer={transfer} />;
     }
   }
-  if (transfer.status === "initialize") {
-    return <BridgeV3ConnectValidateStep successStatus="burn-sys" />;
-  } else if (transfer.status === "burn-sys") {
-    return <BridgeV3StepBurnSys successStatus="confirm-burn-sys" />;
-  } else if (transfer.status === "confirm-burn-sys") {
+  if (transfer.status === COMMON_STATUS.INITIALIZE) {
+    return (
+      <BridgeV3ConnectValidateStep
+        successStatus={SYS_TO_ETH_TRANSFER_STATUS.BURN_SYS}
+      />
+    );
+  } else if (transfer.status === SYS_TO_ETH_TRANSFER_STATUS.BURN_SYS) {
+    return (
+      <BridgeV3StepBurnSys
+        successStatus={SYS_TO_ETH_TRANSFER_STATUS.CONFIRM_BURN_SYS}
+      />
+    );
+  } else if (transfer.status === SYS_TO_ETH_TRANSFER_STATUS.CONFIRM_BURN_SYS) {
     return (
       <BridgeV3StepConfirmUTXOTransaction
         invalidStateMessage="Invalid State: Burn SYS transaction was not saved"
         loadingMessage="Confirming Burn of SYS transaction..."
-        sourceStatus="burn-sys"
-        successStatus="burn-sysx"
+        sourceStatus={SYS_TO_ETH_TRANSFER_STATUS.BURN_SYS}
+        successStatus={SYS_TO_ETH_TRANSFER_STATUS.BURN_SYSX}
         confirmations={0}
       />
     );
-  } else if (transfer.status === "burn-sysx") {
+  } else if (transfer.status === SYS_TO_ETH_TRANSFER_STATUS.BURN_SYSX) {
     return (
-      <BridgeV3StepBurnSysx successStatus="confirm-burn-sysx" toNevm={true} />
+      <BridgeV3StepBurnSysx
+        successStatus={SYS_TO_ETH_TRANSFER_STATUS.CONFIRM_BURN_SYSX}
+        toNevm={true}
+      />
     );
-  } else if (transfer.status === "confirm-burn-sysx") {
+  } else if (transfer.status === SYS_TO_ETH_TRANSFER_STATUS.CONFIRM_BURN_SYSX) {
     return (
       <BridgeV3StepConfirmUTXOTransaction
         invalidStateMessage="Invalid State: Burn SYSX transaction was not saved"
         loadingMessage="Confirming Burn of SYSX transaction..."
-        sourceStatus="burn-sysx"
-        successStatus="generate-proofs"
+        sourceStatus={SYS_TO_ETH_TRANSFER_STATUS.BURN_SYSX}
+        successStatus={SYS_TO_ETH_TRANSFER_STATUS.GENERATE_PROOFS}
       />
     );
-  } else if (transfer.status === "generate-proofs") {
-    return <BridgeV3StepGenerateProofs successStatus="submit-proofs" />;
-  } else if (transfer.status === "submit-proofs") {
-    return <BridgeV3StepSubmitProofs successStatus="finalizing" />;
-  } else if (transfer.status == "finalizing") {
+  } else if (transfer.status === SYS_TO_ETH_TRANSFER_STATUS.GENERATE_PROOFS) {
+    return (
+      <BridgeV3StepGenerateProofs
+        successStatus={SYS_TO_ETH_TRANSFER_STATUS.SUBMIT_PROOFS}
+      />
+    );
+  } else if (transfer.status === SYS_TO_ETH_TRANSFER_STATUS.SUBMIT_PROOFS) {
+    return (
+      <BridgeV3StepSubmitProofs successStatus={COMMON_STATUS.FINALIZING} />
+    );
+  } else if (transfer.status == COMMON_STATUS.FINALIZING) {
     return (
       <BridgeV3ConfirmNEVMTransaction
         invalidStateMessage="Invalid State: Submit Proofs logs was not saved"
         loadingMessage="Confirming final transaction..."
-        sourceStatus="submit-proofs"
-        successStatus="completed"
+        sourceStatus={SYS_TO_ETH_TRANSFER_STATUS.SUBMIT_PROOFS}
+        successStatus={COMMON_STATUS.COMPLETED}
       />
     );
   } else if (transfer.status === "completed") {

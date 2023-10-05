@@ -1,6 +1,10 @@
 import { Alert, Button, CircularProgress } from "@mui/material";
 import { useTransfer } from "../context/TransferContext";
-import { ITransferLog, TransferStatus } from "@contexts/Transfer/types";
+import {
+  ITransferLog,
+  SYS_TO_ETH_TRANSFER_STATUS,
+  TransferStatus,
+} from "@contexts/Transfer/types";
 import { useProof } from "../hooks/useProofs";
 
 type Props = {
@@ -24,9 +28,9 @@ const BridgeV3StepGenerateProofs: React.FC<Props> = ({ successStatus }) => {
         payload: {
           data: typeof data === "string" ? JSON.parse(data) : data,
           message: "Generated proofs",
-          previousStatus: "confirm-burn-sysx",
+          previousStatus: SYS_TO_ETH_TRANSFER_STATUS.CONFIRM_BURN_SYSX,
         },
-        status: "generate-proofs",
+        status: SYS_TO_ETH_TRANSFER_STATUS.GENERATE_PROOFS,
       },
     ];
 

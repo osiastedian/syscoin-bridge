@@ -1,7 +1,11 @@
 import { Alert, Box, Button, Typography } from "@mui/material";
 import UTXOStepWrapper from "../UTXOStepWrapper";
 import { useTransfer } from "../context/TransferContext";
-import { ITransferLog, TransferStatus } from "@contexts/Transfer/types";
+import {
+  ETH_TO_SYS_TRANSFER_STATUS,
+  ITransferLog,
+  TransferStatus,
+} from "@contexts/Transfer/types";
 
 import { useMintSysx } from "../hooks/useMintSysx";
 import { TransactionReceipt } from "web3-core";
@@ -50,7 +54,7 @@ const MintSysx: React.FC<Props> = ({ successStatus }) => {
           },
           message: "Mint SYSX",
         },
-        status: "mint-sysx",
+        status: ETH_TO_SYS_TRANSFER_STATUS.MINT_SYSX,
       },
     ];
     saveTransfer({
@@ -71,7 +75,7 @@ const MintSysx: React.FC<Props> = ({ successStatus }) => {
           },
           message: "Mint SYSX",
         },
-        status: "mint-sysx",
+        status: ETH_TO_SYS_TRANSFER_STATUS.MINT_SYSX,
       },
     ];
     saveTransfer({
