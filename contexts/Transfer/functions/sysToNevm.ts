@@ -5,7 +5,7 @@ import { BlockbookAPIURL, SYSX_ASSET_GUID } from "../constants";
 import burnSysToSysx from "./burnSysToSysx";
 import burnSysx from "./burnSysx";
 import { addLog, TransferActions } from "../store/actions";
-import { ITransfer } from "../types";
+import { COMMON_STATUS, ITransfer, SYS_TO_ETH_TRANSFER_STATUS } from "../types";
 import Web3 from "web3";
 import { Contract } from "web3-eth-contract";
 
@@ -53,9 +53,9 @@ const runWithSysToNevmStateMachine = async (
       );
       await sendUtxoTransaction(burnSysTransaction)
         .then((burnSysTransactionReceipt) => {
-          console.log("burn-sys", burnSysTransactionReceipt, new Date());
+          console.log(SYS_TO_ETH_TRANSFER_STATUS.BURN_SYS, burnSysTransactionReceipt, new Date());
           dispatch(
-            addLog("burn-sys", "Burning SYS to SYSX", burnSysTransactionReceipt)
+            addLog(SYS_TO_ETH_TRANSFER_STATUS.BURN_SYS, "Burning SYS to SYSX", burnSysTransactionReceipt)
           );
         })
         .catch((error) => {
@@ -92,7 +92,7 @@ const runWithSysToNevmStateMachine = async (
         .then((burnSysxTransactionReceipt) => {
           dispatch(
             addLog(
-              "burn-sysx",
+              SYS_TO_ETH_TRANSFER_STATUS.BURN_SYSX,
               "Burning SYSX to NEVM",
               burnSysxTransactionReceipt
             )
@@ -128,7 +128,7 @@ const runWithSysToNevmStateMachine = async (
         throw new Error("Proof not yet available");
       }
       const results = JSON.parse(proof.result) as SPVProof;
-      dispatch(addLog("generate-proofs", "Submitting proofs", { results }));
+      dispatch(addLog(SYS_TO_ETH_TRANSFER_STATUS.GENERATE_PROOFS, "Submitting proofs", { results }));
       break;
     }
 
@@ -185,14 +185,14 @@ const runWithSysToNevmStateMachine = async (
           .once("transactionHash", (hash: string | { success: false }) => {
             if (typeof hash !== "string" && !hash.success) {
               dispatch(
-                addLog("error", "Submission Failed", {
+                addLog(COMMON_STATUS.ERROR, "Submission Failed", {
                   error: hash,
                 })
               );
               reject("Failed to submit proofs. Check browser logs");
             } else {
               dispatch(
-                addLog("submit-proofs", "Transaction hash", {
+                addLog(SYS_TO_ETH_TRANSFER_STATUS.SUBMIT_PROOFS, "Transaction hash", {
                   hash,
                 })
               );
@@ -204,7 +204,7 @@ const runWithSysToNevmStateMachine = async (
               resolve("");
             } else {
               dispatch(
-                addLog("error", error.message ?? "Proof error", {
+                addLog(COMMON_STATUS.ERROR, error.message ?? "Proof error", {
                   error,
                 })
               );
@@ -225,7 +225,7 @@ const runWithSysToNevmStateMachine = async (
         }
         const receipt = await confirmTransaction("nevm", submitProofsHash);
         dispatch(
-          addLog("finalizing", "Transaction Receipt", {
+          addLog(COMMON_STATUS.FINALIZING, "Transaction Receipt", {
             receipt,
           })
         );

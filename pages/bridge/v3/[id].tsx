@@ -2,7 +2,7 @@ import NEVMProvider from "@contexts/ConnectedWallet/NEVMProvider";
 import ConnectedWalletProvider from "@contexts/ConnectedWallet/Provider";
 import MetamaskProvider from "@contexts/Metamask/Provider";
 import { PaliWalletV2Provider } from "@contexts/PaliWallet/V2Provider";
-import { ITransfer, TransferType } from "@contexts/Transfer/types";
+import { COMMON_STATUS, ITransfer, TransferType } from "@contexts/Transfer/types";
 import {
   Box,
   Button,
@@ -45,7 +45,7 @@ const createTransfer = (type: TransferType): ITransfer => ({
   amount: "0",
   id: `${Date.now()}`,
   type,
-  status: "initialize",
+  status: COMMON_STATUS.INITIALIZE,
   logs: [],
   createdAt: Date.now(),
   version: "v2",
