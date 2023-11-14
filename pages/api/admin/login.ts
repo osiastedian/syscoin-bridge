@@ -1,6 +1,5 @@
 import { ADMIN_LOGIN_MESSAGE } from "@constants";
-import { withIronSessionApiRoute } from "iron-session/next";
-import { sessionOptions } from "lib/session";
+import { sessionOptions, withSessionRoute } from "lib/session";
 import { NextApiHandler } from "next";
 import {
   fromRpcSig,
@@ -11,7 +10,7 @@ import {
   pubToAddress,
 } from "ethereumjs-util";
 
-const AdminLoginApiRoute: NextApiHandler = withIronSessionApiRoute(
+const AdminLoginApiRoute: NextApiHandler = withSessionRoute(
   async (req, res) => {
     const { address, signedMessage } = req.body;
 
@@ -37,8 +36,7 @@ const AdminLoginApiRoute: NextApiHandler = withIronSessionApiRoute(
     }
 
     return res.status(401).json({ success: false });
-  },
-  sessionOptions
+  }
 );
 
 export default AdminLoginApiRoute;
