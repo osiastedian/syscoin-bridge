@@ -1,19 +1,29 @@
-import { Container, Typography } from "@mui/material";
-import ConnectAdmin from "components/Admin/ConnectAdmin";
-import AdminProvider from "components/Admin/Provider";
-import AdminTransferDetails from "components/Admin/Transfer/Details";
-import { NextPage } from "next";
+import { redirect } from "next/navigation";
+import { GetServerSideProps } from "next";
+import { withIronSessionSsr } from "iron-session/next";
+import { sessionOptions } from "lib/session";
 
-const AdminPage: NextPage = () => {
-  return (
-    <Container>
-      <AdminProvider>
-        <Typography>Bridge Admin Panel</Typography>
-        <ConnectAdmin />
-        <AdminTransferDetails />
-      </AdminProvider>
-    </Container>
-  );
-};
+export default function AdminPage() {
+  // Render data...
 
-export default AdminPage;
+  return <></>;
+}
+
+// This gets called on every request
+export const getServerSideProps: GetServerSideProps = withIronSessionSsr(
+  async ({ req }) => {
+    const { user } = req.session;
+
+    if (!user) {
+      return {
+        redirect: {
+          destination: "/admin/login",
+          permanent: false,
+        },
+      };
+    }
+
+    return { props: {} };
+  },
+  sessionOptions
+);

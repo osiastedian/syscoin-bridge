@@ -12,6 +12,7 @@ import WelcomeModal from "components/WelcomeModal";
 const queryClient = new QueryClient();
 
 function MyApp({ Component, pageProps, router }: AppProps) {
+  const isAdmin = router.pathname.includes("/admin");
   if (router.pathname.includes("/bridge/v3/")) {
     return (
       <ThemeProvider theme={theme}>
@@ -27,7 +28,7 @@ function MyApp({ Component, pageProps, router }: AppProps) {
           <NEVMProvider>
             <ConnectedWalletProvider>
               <ThemeProvider theme={theme}>
-                <WelcomeModal />
+                {!isAdmin && <WelcomeModal />}
                 <Component {...pageProps} />
               </ThemeProvider>
             </ConnectedWalletProvider>

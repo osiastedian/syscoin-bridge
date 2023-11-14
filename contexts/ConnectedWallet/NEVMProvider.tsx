@@ -15,6 +15,7 @@ interface INEVMContext {
   chainId?: string;
   switchToMainnet: () => void;
   sendTransaction: (transactionConfig: TransactionConfig) => Promise<string>;
+  signMessage: (message: string) => Promise<string>;
   connect: () => void;
 }
 
@@ -136,6 +137,14 @@ const NEVMProvider: React.FC<NEVMProviderProps> = ({ children }) => {
     account.refetch();
   };
 
+  const signMessage = (message: string): Promise<string> => {
+    const msg = `0x${Buffer.from(message, "utf8").toString("hex")}`;
+    return window.ethereum.request({
+      method: "personal_sign",
+      params: [msg, account.data],
+    });
+  };
+
   useEffect(() => {
     if (chainId.isFetched && !isChainChangedCallbackSet) {
       window.ethereum.on("chainChanged", () => {
@@ -155,6 +164,7 @@ const NEVMProvider: React.FC<NEVMProviderProps> = ({ children }) => {
         switchToMainnet,
         connect,
         chainId: chainId.isSuccess && chainId.data ? chainId.data : undefined,
+        signMessage,
       }}
     >
       {children}

@@ -9,18 +9,14 @@ const ConnectAdmin = () => {
 
   const isConnected = Boolean(account);
 
-  const { admin } = useAdmin();
-
   return (
     <>
-      <Typography>Connected Account: {account ?? "-"}</Typography>
       {!isConnected && !isBitcoinBased && (
         <Button onClick={connect}>Connect</Button>
       )}
       {isBitcoinBased && isEVMInjected && (
         <Button onClick={() => switchTo("ethereum")}>Switch to NEVM</Button>
       )}
-      {admin && <Typography>Welcome Admin {admin.name}!</Typography>}
     </>
   );
 };
