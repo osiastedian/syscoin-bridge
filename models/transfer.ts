@@ -52,5 +52,12 @@ const TransferSchema = new mongoose.Schema<Transfer>({
   },
 });
 
-export default mongoose.models.Transfer ||
-  mongoose.model("Transfer", TransferSchema);
+const generateModel = () => mongoose.model("Transfer", TransferSchema);
+
+let model: ReturnType<typeof generateModel> = mongoose.models.Transfer;
+
+if (!model) {
+  model = generateModel();
+}
+
+export default model;
