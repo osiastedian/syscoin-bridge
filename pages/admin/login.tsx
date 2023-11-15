@@ -2,16 +2,20 @@ import { ADMIN_LOGIN_MESSAGE } from "@constants";
 import { useNEVM } from "@contexts/ConnectedWallet/NEVMProvider";
 import { Button, Container, Typography } from "@mui/material";
 import ConnectAdmin from "components/Admin/ConnectAdmin";
-import { NextPage } from "next";
+import { GetServerSideProps, NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 
-export const AdminAuthenticationPage: NextPage = () => {
+type Props = {
+  loginMessage: string;
+};
+
+export const AdminLoginPage: NextPage<Props> = ({ loginMessage }) => {
   const { account, signMessage } = useNEVM();
   const { replace } = useRouter();
 
   const onLogin = () => {
-    signMessage(ADMIN_LOGIN_MESSAGE)
+    signMessage(loginMessage)
       .then((signedMessage) =>
         fetch("/api/admin/login", {
           headers: { "Content-Type": "application/json" },
@@ -51,4 +55,14 @@ export const AdminAuthenticationPage: NextPage = () => {
   );
 };
 
-export default AdminAuthenticationPage;
+export const getServerSideProps: GetServerSideProps = async () => {
+  return {
+    props: {
+      loginMessage: `0x${Buffer.from(ADMIN_LOGIN_MESSAGE, "utf8").toString(
+        "hex"
+      )}`,
+    },
+  };
+};
+
+export default AdminLoginPage;

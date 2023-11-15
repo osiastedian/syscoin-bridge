@@ -138,10 +138,9 @@ const NEVMProvider: React.FC<NEVMProviderProps> = ({ children }) => {
   };
 
   const signMessage = (message: string): Promise<string> => {
-    const msg = `0x${Buffer.from(message, "utf8").toString("hex")}`;
     return window.ethereum.request({
       method: "personal_sign",
-      params: [msg, account.data],
+      params: [message, account.data],
     });
   };
 
