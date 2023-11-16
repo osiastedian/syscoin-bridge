@@ -76,17 +76,12 @@ export const getServerSideProps: GetServerSideProps = withSessionSsr(
 
     const total = await TransferModel.countDocuments();
 
-    const props = {
+    const props: Props = {
       user,
-      transfers: transfers.map(
-        (transfer) =>
-          transfer.toJSON({
-            transform: (doc, ret) => {
-              delete ret._id;
-            },
-          }),
-        total
+      transfers: transfers.map((transfer) =>
+        JSON.parse(JSON.stringify(transfer))
       ),
+      total,
     };
 
     return {

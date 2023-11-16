@@ -1,6 +1,8 @@
 import { ITransfer } from "@contexts/Transfer/types";
+import { Typography } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { TRANSFER_COLUMNS } from "components/Transfer/columns";
+import Link from "next/link";
 
 const AdminTransferList: React.FC<{
   transfers: ITransfer[];
@@ -12,6 +14,13 @@ const AdminTransferList: React.FC<{
         {
           field: "id",
           headerName: "ID",
+          renderCell: (params) => (
+            <Link href={`/admin/transfer/${params.value}`}>
+              <Typography variant="body1" color="primary">
+                {params.value}
+              </Typography>
+            </Link>
+          ),
         },
         ...TRANSFER_COLUMNS,
       ]}
