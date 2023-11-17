@@ -23,10 +23,10 @@ AdminSchema.set("timestamps", true);
 
 const generateModel = () => mongoose.model("Admin", AdminSchema);
 
-let model: ReturnType<typeof generateModel> = mongoose.models.Admin;
+let adminModel: ReturnType<typeof generateModel> = mongoose.models.Admin;
 
-if (!model) {
-  model = generateModel();
+if (!adminModel) {
+  adminModel = generateModel();
 }
 
-export default model;
+export default adminModel;

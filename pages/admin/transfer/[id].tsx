@@ -1,4 +1,4 @@
-import { ITransfer, TransferStatus } from "@contexts/Transfer/types";
+import { ITransfer } from "@contexts/Transfer/types";
 import { Box, Button, Container, Typography } from "@mui/material";
 import { AdminLayoutContainer } from "components/Admin/LayoutContainer";
 import dbConnect from "lib/mongodb";
@@ -10,14 +10,22 @@ import MuiLink from "@mui/material/Link";
 import { FormProvider, useForm } from "react-hook-form";
 import AdminTransferStatusSelect from "components/Admin/Transfer/StatusField";
 import { useNEVM } from "@contexts/ConnectedWallet/NEVMProvider";
+import { formatRelative } from "date-fns";
+import { Change, OverrideTransferRequestBody } from "api/types/admin";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 type Props = {
-  transfer: ITransfer;
+  initialTransfer: ITransfer;
 };
 
-const TransferDetailsPage: NextPage<Props> = ({ transfer }) => {
+type FormValues = Pick<ITransfer, "status">;
+
+const TransferDetailsPage: NextPage<Props> = ({ initialTransfer }) => {
   const { signMessage } = useNEVM();
-  const form = useForm({
+  const [transfer, setTransfer] = useState(initialTransfer);
+
+  const form = useForm<FormValues>({
     mode: "all",
     defaultValues: {
       status: transfer.status,
@@ -29,12 +37,49 @@ const TransferDetailsPage: NextPage<Props> = ({ transfer }) => {
     formState: { isDirty, isValid },
   } = form;
 
-  const onSubmit = async (data: { status: TransferStatus }) => {
-    const hexString = `0x${Buffer.from(JSON.stringify(data), "utf8").toString(
-      "hex"
-    )}`;
+  const onUpdate = (signedMessage: string, changes: Change[]) => {
+    const body: OverrideTransferRequestBody = {
+      signedMessage,
+      changes,
+    };
+    fetch(`/api/admin/transfer/${transfer.id}`, {
+      method: "POST",
+      body: JSON.stringify(body),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((res) => {
+        if (res.ok) {
+          return res.json();
+        }
+      })
+      .then((updatedTransfer) => {
+        setTransfer(updatedTransfer);
+        form.reset({
+          status: updatedTransfer.status,
+        });
+      });
+  };
+
+  const onSubmit = async (data: FormValues) => {
+    const changes: Change[] = [];
+    Object.keys(data).forEach((key) => {
+      const transferKey = key as keyof FormValues;
+      if (transfer[transferKey] !== data[transferKey]) {
+        changes.push({
+          property: transferKey,
+          from: transfer[transferKey],
+          to: data[transferKey],
+        });
+      }
+    });
+    const hexString = `0x${Buffer.from(
+      JSON.stringify(changes),
+      "utf8"
+    ).toString("hex")}`;
     signMessage(hexString).then((signedMessage) => {
-      console.log(signedMessage);
+      return onUpdate(signedMessage, changes);
     });
   };
   return (
@@ -64,6 +109,9 @@ const TransferDetailsPage: NextPage<Props> = ({ transfer }) => {
           >
             {transfer.utxoAddress}
           </MuiLink>
+        </Typography>
+        <Typography variant="body1" sx={{ mb: 2 }}>
+          Created: {formatRelative(new Date(transfer.createdAt), new Date())}
         </Typography>
         <Box component="form" onSubmit={handleSubmit(onSubmit)}>
           <FormProvider {...form}>
@@ -102,7 +150,7 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
 
   const transfer = await TransferModel.findOne(
     { id },
-    { id: 1, nevmAddress: 1, utxoAddress: 1, status: 1, type: 1 }
+    { id: 1, nevmAddress: 1, utxoAddress: 1, status: 1, type: 1, createdAt: 1 }
   );
 
   if (!transfer) {
@@ -113,7 +161,7 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
 
   return {
     props: {
-      transfer: JSON.parse(JSON.stringify(transfer)),
+      initialTransfer: JSON.parse(JSON.stringify(transfer)),
     },
   };
 };

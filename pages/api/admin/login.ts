@@ -9,33 +9,39 @@ import {
   bufferToHex,
   pubToAddress,
 } from "ethereumjs-util";
+import dbConnect from "lib/mongodb";
+import AdminModel from "models/admin";
+import { verifySignature } from "utils/api/verify-signature";
 
 const AdminLoginApiRoute: NextApiHandler = withSessionRoute(
   async (req, res) => {
     const { address, signedMessage } = req.body;
 
-    const sigParams = fromRpcSig(signedMessage);
-
-    const msgHash = hashPersonalMessage(
-      toBuffer(`0x${Buffer.from(ADMIN_LOGIN_MESSAGE, "utf8").toString("hex")}`)
+    const isVerified = verifySignature(
+      ADMIN_LOGIN_MESSAGE,
+      signedMessage,
+      address
     );
 
-    // Recover the public key from the signature
-    const publicKey = ecrecover(msgHash, sigParams.v, sigParams.r, sigParams.s);
-    const recoveredAddress = bufferToHex(pubToAddress(publicKey));
-
-    console.log({ recoveredAddress, publicKey });
-
-    if (recoveredAddress.toLowerCase() === address.toLowerCase()) {
-      req.session.user = {
-        address,
-        name: "Test",
-      };
-      await req.session.save();
-      return res.status(200).json({ success: true });
+    if (isVerified) {
+      return res.status(401).json({ success: false });
     }
 
-    return res.status(401).json({ success: false });
+    await dbConnect();
+
+    const adminUser = await AdminModel.findOne({ address });
+
+    if (!adminUser) {
+      return res.status(401).json({ success: false });
+    }
+
+    req.session.user = {
+      address: adminUser.address,
+      name: adminUser.name,
+    };
+
+    await req.session.save();
+    return res.status(200).json({ success: true });
   }
 );
 
